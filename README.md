@@ -1,0 +1,2 @@
+# AlgoInvestAndTrade
+Project 7
