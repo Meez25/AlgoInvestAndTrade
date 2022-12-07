@@ -1,3 +1,5 @@
+import numpy as np
+
 """Creation of the input data for the project"""
 
 input_data = [
@@ -27,47 +29,37 @@ input_data = [
 for data in input_data:
     data["profit"] = data["profit"] / 100 * data["cost"]
 
-
-def iterative_KS(input_data):
-
-    MAX_POSSIBILITIES = 2**20
-
-    total_cost = 0
-    max_output = 0
-    item_to_buy = 0
-
-    for i in range(MAX_POSSIBILITIES):
-        binary = bin(i)[
-            2:
-        ]  # For each possibility, we have a binary representation of the possibility
-        position = [
-            pos for pos, char in enumerate(binary) if char == "0"
-        ]  # Get all the "1"'s position  which are the item to buy
-        cost = 0
-        profit = 0
-        for pos in position:
-            cost += input_data[pos][
-                "cost"
-            ]  # Calculate the cost and profit for each possiblity
-            if cost > 500:  # If the cost is above 500, we check the next one
-                break
-            profit += input_data[pos]["profit"]
-        if (
-            profit > max_output and cost < 500
-        ):  # We take the highest profit and a cost below 500
-            max_output = profit
-            total_cost = cost
-            item_to_buy = position
-
-    print(max_output)
-    print(total_cost)
-    print(item_to_buy)
-    """
-        for item in item_to_buy:
-        print(input_data[item]["action"])
-        print(input_data[item]["cost"])
-        print(input_data[item]["profit"])
-    """
+array = np.empty((20, 500))
 
 
-iterative_KS(input_data)
+def recursive_KS(input_data, n, capacity):
+    """In this function, we brute force the computation of the KS problem. Each item
+    is either put in the bag or not"""
+    # If the bag is full or the last item is reached, return 0
+    if n == -1 or capacity == 0:
+        result = 0
+    # If the item is bigger than the remaining capacity
+    elif input_data[n]["cost"] > capacity:
+        result = recursive_KS(
+            input_data,
+            n - 1,
+            capacity,
+        )
+    # We try putting the item in the bag, and not putting it in the bag
+    else:
+        # Not putting the item in the bag
+        tmp1 = recursive_KS(
+            input_data,
+            n - 1,
+            capacity,
+        )  # We try putting the item in the bag
+        tmp2 = input_data[n]["profit"] + recursive_KS(
+            input_data,
+            n - 1,
+            capacity - input_data[n]["cost"],
+        )
+        result = max(tmp1, tmp2)
+    return result
+
+
+print(recursive_KS(input_data, len(input_data) - 1, 500))
