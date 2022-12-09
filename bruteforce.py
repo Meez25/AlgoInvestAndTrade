@@ -30,7 +30,8 @@ def main():
     for action in input_data:
         action["profit"] = action["profit"] / 100 * action["cost"]
 
-    find_best_combinaison(input_data)
+    max_profit, total_cost, item_to_buy = find_best_combinaison(input_data)
+    display_result(max_profit, total_cost, item_to_buy, input_data)
 
 
 def convert_int_to_binary(int):
@@ -79,6 +80,12 @@ def find_best_combinaison(input_data):
             max_profit = profit
             total_cost = cost
             item_to_buy = position_of_ones
+
+    return max_profit, total_cost, item_to_buy
+
+
+def display_result(max_profit, total_cost, item_to_buy, input_data):
+    """Display the result of the computation"""
 
     print(
         f"Le bénéfice maximum sur 2 ans est de {max_profit}$ pour un coût de {total_cost}$"
