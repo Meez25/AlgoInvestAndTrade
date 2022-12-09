@@ -1,7 +1,3 @@
-import numpy as np
-
-"""Creation of the input data for the project"""
-
 input_data = [
     {"action": "Action-1", "cost": 20, "profit": 5},
     {"action": "Action-2", "cost": 30, "profit": 10},
@@ -29,37 +25,57 @@ input_data = [
 for data in input_data:
     data["profit"] = data["profit"] / 100 * data["cost"]
 
-array = np.empty((20, 500))
+
+def dynamic_programming_KS(vals, wts, capacity):
+
+    # Make the table (list comprehension)
+
+    w, h = capacity + 1, len(vals)
+
+    table = [[0 for _ in range(w)] for _ in range(h)]
+
+    # First iterate over the items (rows)
+    # second iterate over the columns which represent weights
+
+    for index in range(len(vals)):
+        for weight in range(w):
+            # If the item weights more than the capacity at that column?
+            # Take above value, that problem was solved
+            if wts[index] > weight:
+                table[index][weight] = table[index - 1][weight]
+                continue
+
+            # if the value of the item < capacity
+            prior_value = table[index - 1][weight]
+            #         val of current item  + val of remaining weight
+            new_option_best = vals[index] + table[index - 1][weight - wts[index]]
+            table[index][weight] = max(prior_value, new_option_best)
+
+    return table
 
 
-def recursive_KS(input_data, n, capacity):
-    """In this function, we brute force the computation of the KS problem. Each item
-    is either put in the bag or not"""
-    # If the bag is full or the last item is reached, return 0
-    if n == -1 or capacity == 0:
-        result = 0
-    # If the item is bigger than the remaining capacity
-    elif input_data[n]["cost"] > capacity:
-        result = recursive_KS(
-            input_data,
-            n - 1,
-            capacity,
-        )
-    # We try putting the item in the bag, and not putting it in the bag
-    else:
-        # Not putting the item in the bag
-        tmp1 = recursive_KS(
-            input_data,
-            n - 1,
-            capacity,
-        )  # We try putting the item in the bag
-        tmp2 = input_data[n]["profit"] + recursive_KS(
-            input_data,
-            n - 1,
-            capacity - input_data[n]["cost"],
-        )
-        result = max(tmp1, tmp2)
-    return result
+def items_in_optimal(h, w, wts, table, input_data):
+    i = h - 1
+    j = w
+
+    while i > 0 and j > 0:
+        if table[i][j] != table[i - 1][j]:
+            print(input_data[i]["action"])
+            j = j - wts[i]
+            i = i - 1
+        else:
+            i = i - 1
 
 
-print(recursive_KS(input_data, len(input_data) - 1, 500))
+vals = [data["profit"] for data in input_data]
+wts = [data["cost"] for data in input_data]
+
+
+def main():
+    CAPACITY = 500
+    table = dynamic_programming_KS(vals, wts, CAPACITY)
+    items_in_optimal(len(wts), CAPACITY, wts, table, input_data)
+
+
+if __name__ == "__main__":
+    main()
