@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 from optimized import dynamic_programming_KS
 
 
@@ -68,4 +69,8 @@ def items_in_dataset(h, w, wts, table, dataset_name, dataset_weight):
 
 
 if __name__ == "__main__":
+    start = datetime.now()
     main()
+    end = datetime.now()
+    td = (end - start).total_seconds()
+    print(f"Le temps d'exécution est de : {td} secondes")

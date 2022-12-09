@@ -1,3 +1,6 @@
+from datetime import datetime
+
+
 input_data = [
     {"action": "Action-1", "cost": 20, "profit": 5},
     {"action": "Action-2", "cost": 30, "profit": 10},
@@ -78,4 +81,8 @@ def main():
 
 
 if __name__ == "__main__":
+    start = datetime.now()
     main()
+    end = datetime.now()
+    td = (end - start).total_seconds() * 10**3
+    print(f"Le temps d'exécution est de : {td:.03f}ms")

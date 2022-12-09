@@ -1,7 +1,8 @@
-"""Creation of the input data for the project"""
+from datetime import datetime
 
 
 def main():
+    """Creation of the input data for the project"""
     input_data = [
         {"action": "Action-1", "cost": 20, "profit": 5},
         {"action": "Action-2", "cost": 30, "profit": 10},
@@ -25,11 +26,38 @@ def main():
         {"action": "Action-20", "cost": 114, "profit": 18},
     ]
 
-    """convert the profit to a decimal value, representing money."""
-    for data in input_data:
-        data["profit"] = data["profit"] / 100 * data["cost"]
+    """convert the profit pourcentage to a decimal value, representing benefit."""
+    for action in input_data:
+        action["profit"] = action["profit"] / 100 * action["cost"]
 
     brute_force_KS(input_data)
+
+
+def convert_int_to_binary(int):
+    """Convert to binary and remove leading "0b"""
+    return bin(int)[2:]
+
+
+def find_position_of_ones(binary):
+    """Find the position of ones in the binary string"""
+    position_of_ones = []
+    for pos, char in enumerate(
+        binary
+    ):  # Get all the "1"'s position  which are the item to buy in the current possibility
+        if char == "1":
+            position_of_ones.append(len(binary) - 1 - pos)
+    return position_of_ones
+
+
+def calculate_cost_for_possiblity(position_of_ones, input_data):
+    cost = 0
+    profit = 0
+    for pos in position_of_ones:
+        cost += input_data[pos][
+            "cost"
+        ]  # Calculate the cost and profit for each possiblity
+        profit += input_data[pos]["profit"]
+    return cost, profit
 
 
 def brute_force_KS(input_data):
@@ -37,37 +65,23 @@ def brute_force_KS(input_data):
     MAX_POSSIBILITIES = 2**20
 
     total_cost = 0
-    max_output = 0
+    max_profit = 0
     item_to_buy = 0
 
     for i in range(MAX_POSSIBILITIES):
-        # For each possibility, we have a binary representation of the possibility
-        binary = bin(i)[2:]  # Remove leading "0b"
-        position_of_ones = []
-        for pos, char in enumerate(
-            binary
-        ):  # Get all the "1"'s position  which are the item to buy
-            if char == "1":
-                position_of_ones.append(len(binary) - 1 - pos)
-        cost = 0
-        profit = 0
-        for pos in position_of_ones:
-            cost += input_data[pos][
-                "cost"
-            ]  # Calculate the cost and profit for each possiblity
-            if cost > 500:  # If the cost is above 500, we check the next one
-                break
-            profit += input_data[pos]["profit"]
+        # For each possibility, we create a binary representation of the possibility
+        binary = convert_int_to_binary(i)  # Convert i to binary
+        position_of_ones = find_position_of_ones(binary)
+        cost, profit = calculate_cost_for_possiblity(position_of_ones, input_data)
         if (
-            profit > max_output and cost < 500
-        ):  # We take the highest profit and a cost below 500
-            max_output = profit
+            profit > max_profit and cost <= 500
+        ):  # We take the highest profit and a cost below or equal to 500$
+            max_profit = profit
             total_cost = cost
             item_to_buy = position_of_ones
-            # print(item_to_buy)
 
     print(
-        f"Le bénéfice maximum sur 2 ans est de {max_output}$ pour un coût de {total_cost}$"
+        f"Le bénéfice maximum sur 2 ans est de {max_profit}$ pour un coût de {total_cost}$"
     )
     print("Voici la liste des actions à acheter :")
     for item in item_to_buy:
@@ -75,4 +89,8 @@ def brute_force_KS(input_data):
 
 
 if __name__ == "__main__":
+    start = datetime.now()
     main()
+    end = datetime.now()
+    td = (end - start).total_seconds() * 10**3
+    print(f"Le temps d'exécution est de : {td:.03f}ms")
