@@ -30,7 +30,7 @@ def main():
     for action in input_data:
         action["profit"] = action["profit"] / 100 * action["cost"]
 
-    brute_force_KS(input_data)
+    find_best_combinaison(input_data)
 
 
 def convert_int_to_binary(int):
@@ -60,7 +60,7 @@ def calculate_cost_for_possiblity(position_of_ones, input_data):
     return cost, profit
 
 
-def brute_force_KS(input_data):
+def find_best_combinaison(input_data):
 
     MAX_POSSIBILITIES = 2**20
 
