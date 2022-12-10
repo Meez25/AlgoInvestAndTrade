@@ -1,15 +1,13 @@
 import csv
 from datetime import datetime
-from optimized import dynamic_programming_KS
+
+from optimized import get_best_combinaison
 
 
-def main():
-    csv_file = "dataset1_Python+P7.csv"
-    # csv_file = "dataset2_Python+P7.csv"
-    CAPACITY = 50000  # The capacity is in cents
-    data_set1_values = []
-    data_set1_weights = []
-    data_set1_names = []
+def extract_lists_from_csv(csv_file):
+    data_set_values = []
+    data_set_weights = []
+    data_set_names = []
 
     with open(csv_file) as fichier_csv:
         reader = csv.reader(fichier_csv)
@@ -20,24 +18,13 @@ def main():
             weight = int(float(row[1]) * 100)  # use cents
             pourcentage = float(row[2])
             value = int(pourcentage / 100 * weight)  # use cents
-            data_set1_weights.append(weight)
-            data_set1_values.append(value)
-            data_set1_names.append(row[0])
+            data_set_weights.append(weight)
+            data_set_values.append(value)
+            data_set_names.append(row[0])
+    return data_set_values, data_set_weights, data_set_names
 
-    # Create the table
-    table_data_set_1 = dynamic_programming_KS(
-        data_set1_values, data_set1_weights, CAPACITY
-    )
-    # Using the table, find the action to buy
-    item_to_buy = items_in_dataset(
-        len(data_set1_weights),
-        CAPACITY,
-        data_set1_weights,
-        table_data_set_1,
-        data_set1_names,
-        data_set1_weights,
-    )
 
+def calculate_gain(csv_file, item_to_buy):
     with open(csv_file) as fichier_csv:
         reader = csv.reader(fichier_csv)
         next(reader)  # skip the header
@@ -66,6 +53,29 @@ def items_in_dataset(h, w, wts, table, dataset_name, dataset_weight):
         else:
             i = i - 1
     return action_to_buy
+
+
+def main():
+    # csv_file = "dataset1_Python+P7.csv"
+    csv_file = "dataset2_Python+P7.csv"
+    CAPACITY = 50000  # The capacity is in cents for a better precision
+
+    data_set_values, data_set_weights, data_set_names = extract_lists_from_csv(csv_file)
+
+    # Create the table
+    table_data_set = get_best_combinaison(data_set_values, data_set_weights, CAPACITY)
+    # Using the table, find the action to buy
+    item_to_buy = items_in_dataset(
+        len(data_set_weights),
+        CAPACITY,
+        data_set_weights,
+        table_data_set,
+        data_set_names,
+        data_set_weights,
+    )
+
+    # Verify the computation with the csv file
+    calculate_gain(csv_file, item_to_buy)
 
 
 if __name__ == "__main__":

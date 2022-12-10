@@ -32,8 +32,6 @@ def get_best_combinaison(profit, cost, capacity):
     table = create_table(width, heigth)  # Create a table for the dynamic_programming
     table = fill_in_the_table(table, profit, width, cost)
     return table
-    # First iterate over the items (rows)
-    # second iterate over the columns which represent weights
 
 
 def items_in_optimal(heigth, width, cost, table, input_data):
@@ -62,7 +60,17 @@ def display_result(max_profit, list_of_action_to_buy, total_cost):
         print(action)
 
 
+def convert_pourcentage_to_profit(input_data):
+    """convert the profit to a decimal value, representing money."""
+    for action in input_data:
+        action["profit"] = action["profit"] / 100 * action["cost"]
+    return input_data
+
+
 def main():
+
+    CAPACITY = 500
+
     input_data = [
         {"action": "Action-1", "cost": 20, "profit": 5},
         {"action": "Action-2", "cost": 30, "profit": 10},
@@ -86,13 +94,11 @@ def main():
         {"action": "Action-20", "cost": 114, "profit": 18},
     ]
 
-    """convert the profit to a decimal value, representing money."""
-    for action in input_data:
-        action["profit"] = action["profit"] / 100 * action["cost"]
+    input_data = convert_pourcentage_to_profit(input_data)
 
     profit = [data["profit"] for data in input_data]
     cost = [data["cost"] for data in input_data]
-    CAPACITY = 500
+
     table = get_best_combinaison(profit, cost, CAPACITY)
     # The best combination is at the bottom right of the table
     best_profit = table[-1][-1]
